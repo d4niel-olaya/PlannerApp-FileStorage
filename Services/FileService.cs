@@ -68,7 +68,30 @@ public class FileService : IFileService
         }
     }
 
-   
+   public IResult GetFile(string filename)
+   {
+        var filePath = @"C:\Users\Juan Daniel\Documents\PlannerApp_FileStorage\files\filesTasks\"+filename; 
+
+       try{
+            if(File.Exists(filePath))
+            {
+                
+                var fileBytes = File.ReadAllBytes(filePath);
+
+                var contentType = "image/"+Path.GetExtension(filePath).ToString();
+                Console.WriteLine(contentType);
+
+                
+                return Results.File(filePath,contentType);
+            }
+            else{
+                return Results.NotFound();
+            }
+       }catch(Exception e)
+       {
+            return Results.NotFound(e.Message);
+       }
+   }
     
 
 }
@@ -77,7 +100,7 @@ public interface IFileService
 {
     Task<Response> UploadFile([FromForm] IFormFile file, int taskId, string domain);
     //Task<List<File>> GetFiles();
-    //Task<File> GetFile(string FileName);
+    IResult GetFile(string FileName);
 }
 
 public class Response

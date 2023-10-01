@@ -40,26 +40,22 @@ app.MapGet("/weatherforecast", () =>
 .WithName("GetWeatherForecast");
 app.MapPost("/files", async (HttpContext context,[FromServices] IFileService fileService) => {
     var protocol = "https://";
-    if(context.Request.Host.Host == "localhost")
-    {
-        protocol = "http://";
-    }
     var result = await fileService.UploadFile(context.Request.Form.Files[0], Int32.Parse(context.Request.Form["id"]), protocol+context.Request.Host.Host);
     return result;
 });
 
 app.MapGet("/files/{filename}", async (string filename) =>{
-      var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"/files/filesTasks"); // Reemplaza con la ubicación real del archivo
+      var filePath = DataHelper.GetVolumePath(builder.Configuration)+@"\"+filename; 
 
        try{
-            if(Directory.Exists(filePath))
+            if(File.Exists(filePath))
             {
                 
-                var fileBytes = File.ReadAllBytes(Path.Combine(filePath, filename));
+                var fileBytes = File.ReadAllBytes(filePath);
 
-                Console.WriteLine(Path.Combine(filePath, filename));
-                var contentType = "image/"+Path.GetExtension(Path.Combine(filePath)).ToString();
-                Console.WriteLine(contentType);
+                
+                var contentType = "image/" +Path.GetExtension(filename).Substring(1);
+                
 
                 
                 return Results.File(filePath,contentType);
@@ -69,7 +65,7 @@ app.MapGet("/files/{filename}", async (string filename) =>{
             }
        }catch(Exception e)
        {
-            return Results.NotFound();
+            return Results.NotFound(e.Message);
        }
 
         // Leer el contenido del archivo
