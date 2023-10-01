@@ -33,11 +33,27 @@ var summaries = new[]
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
 };
 
-app.MapGet("/weatherforecast", () =>
+app.MapGet("/getfiles", () =>
 {
-    return AppDomain.CurrentDomain.BaseDirectory.ToString();
-})
-.WithName("GetWeatherForecast");
+    List<string> fileList = new List<string>();
+    var volumeMountPath = Environment.GetEnvironmentVariable("RAILWAY_VOLUME_MOUNT_PATH");
+
+        if (!string.IsNullOrEmpty(volumeMountPath))
+        {
+            // Crea una ruta completa al directorio dentro del volumen
+            var directoryPath = Path.Combine(volumeMountPath);
+
+            if (Directory.Exists(directoryPath))
+            {
+                // Utiliza Directory.GetFiles() o Directory.EnumerateFiles() para obtener la lista de archivos
+                // Directory.GetFiles() devuelve una matriz de cadenas con los nombres de archivo completos
+                // Directory.EnumerateFiles() devuelve un IEnumerable<string> para la iteración eficiente de archivos
+                fileList = Directory.EnumerateFiles(directoryPath).ToList();
+            }
+        }
+    return fileList;
+});
+
 app.MapPost("/files", async (HttpContext context,[FromServices] IFileService fileService) => {
     var protocol = "https://";
     var result = await fileService.UploadFile(context.Request.Form.Files[0], Int32.Parse(context.Request.Form["id"]), protocol+context.Request.Host.Host);
