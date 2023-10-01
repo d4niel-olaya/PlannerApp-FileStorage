@@ -59,7 +59,7 @@ app.MapGet("/getfiles", () =>
 app.MapPost("/files", async (HttpContext context,[FromServices] IFileService fileService) => {
     var protocol = "https://";
     var result = await fileService.UploadFile(context.Request.Form.Files[0], Int32.Parse(context.Request.Form["id"]), protocol+context.Request.Host.Host);
-    return result;
+    return Results.StatusCode(result.Code);
 });
 
 app.MapGet("/files/{filename}", (string filename) =>{
