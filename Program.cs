@@ -1,17 +1,21 @@
 using MySqlConnector;
 using PlannerApp.FileStorage.Helpers;
 using PlannerApp.FileStorage.Database;
+using PlannerApp.FileStorage.Services;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 builder.Services.AddTransient(_ =>
     new MySqlConnection(DataHelper.GetStringDB(builder.Configuration))
     ); // Db Connection 
 builder.Services.AddTransient<IDb,DatabaseProvider>();
+builder.Services.AddScoped<IFileService,FileService>();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -41,6 +45,11 @@ app.MapGet("/weatherforecast", () =>
     return forecast;
 })
 .WithName("GetWeatherForecast");
+app.MapPost("/files", async (HttpContext context,[FromServices] IFileService fileService) => {
+
+    var result = await fileService.UploadFile(context.Request.Form.Files[0], 2);
+    return result;
+});
 
 app.Run();
 
