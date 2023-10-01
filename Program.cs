@@ -90,6 +90,11 @@ app.MapGet("/files/{filename}", (string filename) =>{
         
 });
 
+app.MapGet("/taskfiles/{id}", async(int id,[FromServices] IFileService fileService)=>{
+    var result = await fileService.GetFilesById(id);
+    return result;
+});
+
 app.Run();
 
 record WeatherForecast(DateTime Date, int TemperatureC, string? Summary)

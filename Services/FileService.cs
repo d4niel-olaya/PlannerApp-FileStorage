@@ -15,6 +15,25 @@ public class FileService : IFileService
         _dbService = db;
     }
 
+    public async Task<List<string>> GetFilesById(int id)
+    {  
+        var list = new List<string>();
+        await _dbService.OpenDb();
+        using var cmd = _dbService.GetCommand();
+        cmd.Connection = _dbService.GetProvider();
+        cmd.CommandText = "SELECT  Domain, FileName FROM Files WHERE TaskId = @F";
+        cmd.Parameters.AddWithValue("@F", id);
+
+        using var reader = await cmd.ExecuteReaderAsync();
+         while(await reader.ReadAsync())
+         {
+            var path = reader.GetString(0)+"/files/"+reader.GetString(1);
+            list.Add(path);
+        }
+        await _dbService.CloseDb();
+        return list;
+    }
+
     public async Task<Response> UploadFile(IFormFile file, int taskId, string domain)
     {
         try
@@ -68,7 +87,7 @@ public class FileService : IFileService
         }
     }
 
-
+     
 }
 
 public interface IFileService
@@ -76,6 +95,8 @@ public interface IFileService
     Task<Response> UploadFile([FromForm] IFormFile file, int taskId, string domain);
     //Task<List<File>> GetFiles();
     //IResult GetFile(string FileName);
+
+    Task<List<string>> GetFilesById(int id);
 }
 
 public class Response
@@ -89,4 +110,11 @@ public class Response
         Code=code;
         Message = msg;
     }
+}
+
+public class FileItem
+{
+    public int TaskId {get;set;}
+
+    public string Path {get;set;} = string.Empty;
 }
