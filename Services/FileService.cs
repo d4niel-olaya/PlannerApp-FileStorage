@@ -26,7 +26,7 @@ public class FileService : IFileService
             if (!string.IsNullOrEmpty(volumeMountPath))
             {
                 // Crea una ruta completa al directorio dentro del volumen
-                var directoryPath = Path.Combine(volumeMountPath, "filesTasks");
+                var directoryPath = Path.Combine(volumeMountPath);
 
                 // Asegúrate de que el directorio exista o créalo si no existe
                 if(Directory.Exists(directoryPath) == false)
