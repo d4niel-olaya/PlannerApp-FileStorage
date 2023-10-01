@@ -15,7 +15,7 @@ public class FileService : IFileService
         _dbService = db;
     }
 
-    public async Task<Response> UploadFile(IFormFile file, int taskId)
+    public async Task<Response> UploadFile(IFormFile file, int taskId, string domain)
     {
         try
         {
@@ -53,7 +53,7 @@ public class FileService : IFileService
                 cmd.Connection = _dbService.GetProvider();
                 cmd.CommandText = "INSERT INTO Files(TaskId, Domain, FileName) VALUE(@N, @D, @S)";
                 cmd.Parameters.AddWithValue("@N", taskId);
-                cmd.Parameters.AddWithValue("@D", "domain");
+                cmd.Parameters.AddWithValue("@D", domain);
                 cmd.Parameters.AddWithValue("@S", fileName);
                 await cmd.ExecuteNonQueryAsync();
             }
@@ -68,12 +68,16 @@ public class FileService : IFileService
         }
     }
 
+   
+    
 
 }
 
 public interface IFileService
 {
-    Task<Response> UploadFile([FromForm] IFormFile file, int taskId);
+    Task<Response> UploadFile([FromForm] IFormFile file, int taskId, string domain);
+    //Task<List<File>> GetFiles();
+    //Task<File> GetFile(string FileName);
 }
 
 public class Response
