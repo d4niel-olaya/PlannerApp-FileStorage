@@ -62,8 +62,8 @@ app.MapPost("/files", async (HttpContext context,[FromServices] IFileService fil
     return result;
 });
 
-app.MapGet("/files/{filename}", async (string filename) =>{
-      var filePath = $"{DataHelper.GetVolumePath(builder.Configuration)}{filename}";                
+app.MapGet("/files/{filename}", (string filename) =>{
+      var filePath = $"{DataHelper.GetVolumePath(builder.Configuration)}{filename}";                            
         
        try{
             if(File.Exists(filePath))
@@ -79,7 +79,7 @@ app.MapGet("/files/{filename}", async (string filename) =>{
                 return Results.File(filePath,contentType);
             }
             else{
-                return Results.NotFound();
+                return Results.NotFound("Not exists  :" +filePath);
             }
        }catch(Exception e)
        {
