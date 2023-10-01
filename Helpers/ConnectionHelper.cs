@@ -11,7 +11,7 @@ public class DataHelper
     public static string GetVolumePath(IConfiguration configuration)
     {
         var devEnviroment = configuration["local:path"];
-        var productionEnviroment = Environment.GetEnvironmentVariable("RAILWAY_VOLUME_MOUNT_PATH");
+        var productionEnviroment = AppDomain.CurrentDomain.BaseDirectory+Environment.GetEnvironmentVariable("RAILWAY_VOLUME_MOUNT_PATH");
         return string.IsNullOrEmpty(productionEnviroment) ? devEnviroment : productionEnviroment;
     }
 }

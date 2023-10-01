@@ -32,7 +32,9 @@ var summaries = new[]
 {
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
 };
-
+app.MapGet("/base", ()=>{
+    return AppDomain.CurrentDomain.BaseDirectory;
+});
 app.MapGet("/getfiles", () =>
 {
     List<string> fileList = new List<string>();
@@ -41,7 +43,7 @@ app.MapGet("/getfiles", () =>
         if (!string.IsNullOrEmpty(volumeMountPath))
         {
             // Crea una ruta completa al directorio dentro del volumen
-            var directoryPath = Path.Combine(volumeMountPath);
+            var directoryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,volumeMountPath);
 
             if (Directory.Exists(directoryPath))
             {
@@ -61,7 +63,7 @@ app.MapPost("/files", async (HttpContext context,[FromServices] IFileService fil
 });
 
 app.MapGet("/files/{filename}", async (string filename) =>{
-      var filePath = $"{DataHelper.GetVolumePath(builder.Configuration)}{filename}"; 
+      var filePath = $"{DataHelper.GetVolumePath(builder.Configuration)}{filename}";                
         
        try{
             if(File.Exists(filePath))
