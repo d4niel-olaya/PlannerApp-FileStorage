@@ -45,8 +45,8 @@ app.MapPost("/files", async (HttpContext context,[FromServices] IFileService fil
 });
 
 app.MapGet("/files/{filename}", async (string filename) =>{
-      var filePath = DataHelper.GetVolumePath(builder.Configuration)+@"\"+filename; 
-
+      var filePath = $"{DataHelper.GetVolumePath(builder.Configuration)}{filename}"; 
+        
        try{
             if(File.Exists(filePath))
             {
