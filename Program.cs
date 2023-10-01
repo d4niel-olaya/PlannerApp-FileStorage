@@ -32,7 +32,9 @@ var summaries = new[]
 {
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
 };
-
+app.MapGet("/base", ()=>{
+    return AppDomain.CurrentDomain.BaseDirectory;
+});
 app.MapGet("/getfiles", () =>
 {
     List<string> fileList = new List<string>();
