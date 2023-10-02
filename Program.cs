@@ -4,6 +4,8 @@ using PlannerApp.FileStorage.Database;
 using PlannerApp.FileStorage.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http.Headers;
+using Microsoft.AspNetCore.Http;
+using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -59,6 +61,10 @@ app.MapGet("/getfiles", () =>
 app.MapPost("/files", async (HttpContext context,[FromServices] IFileService fileService) => {
     var protocol = "https://";
     var result = await fileService.UploadFile(context.Request.Form.Files[0], Int32.Parse(context.Request.Form["id"]), protocol+context.Request.Host.Host);
+    if(result.Code == 201)
+    {
+        return Results.StatusCode(201);
+    }
     return Results.StatusCode(result.Code);
 });
 
@@ -92,7 +98,12 @@ app.MapGet("/files/{filename}", (string filename) =>{
 
 app.MapGet("/taskfiles/{id}", async(int id,[FromServices] IFileService fileService)=>{
     var result = await fileService.GetFilesById(id);
-    return result;
+    if(result.Code == 200)
+    {
+        return Results.Ok(result.Object);
+    }
+
+    return Results.StatusCode(result.Code);
 });
 
 app.Run();

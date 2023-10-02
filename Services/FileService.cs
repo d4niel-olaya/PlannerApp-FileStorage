@@ -24,7 +24,7 @@ public class FileService : IFileService
             await _dbService.OpenDb();
             using var cmd = _dbService.GetCommand();
             cmd.Connection = _dbService.GetProvider();
-            cmd.CommandText = "SELECT  Domain, FileName, FileUserName FROM Files WHERE TaskId = @F";
+            cmd.CommandText = "SELECT  Domain, FileName, IFNULL(FileUserName, 'No hay un nombre para el archivo') as FileUserName FROM Files WHERE TaskId = @F";
             cmd.Parameters.AddWithValue("@F", id);
 
             using var reader = await cmd.ExecuteReaderAsync();
